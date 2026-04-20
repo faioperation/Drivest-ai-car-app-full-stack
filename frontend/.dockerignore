@@ -1,0 +1,68 @@
+# =============================================================================
+# frontend/.dockerignore
+# =============================================================================
+
+
+# ─── Node dependencies ────────────────────────────────────────────────────────
+# Rebuilt inside the container by `npm ci` in the deps stage.
+# The host copy may have Windows-specific binaries that break in Linux Alpine.
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+
+# ─── Next.js build output ────────────────────────────────────────────────────
+# The builder stage runs `next build` fresh inside the container.
+# Including the host's .next/ would cause stale/corrupt build artifacts.
+.next/
+out/
+
+
+# ─── Environment / secrets ────────────────────────────────────────────────────
+# NEXT_PUBLIC_ vars are set at build time via docker-compose build args.
+# Never bake real values into the image.
+.env
+.env.*
+!.env.example
+
+
+# ─── Development tooling ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+# ─── Git ─────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+
+
+# ─── OS artefacts ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+
+# ─── Documentation ───────────────────────────────────────────────────────────
+README.md
+*.md
+
+
+# ─── Docker files ────────────────────────────────────────────────────────────
+Dockerfile
+.dockerignore
+
+
+# ─── Linting / config artefacts ──────────────────────────────────────────────
+# eslint.config.mjs is copied — it's needed for next build.
+# These are NOT needed:
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+
+# ─── Vercel ──────────────────────────────────────────────────────────────────
+.vercel/

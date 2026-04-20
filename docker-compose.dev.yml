@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # ─── Database (MongoDB) ─────────────────────────────────────────────────────
+  mongodb:
+    # Expose database port in dev to inspect collections via MongoDB Compass / Robo 3T
+    ports:
+      - "27017:27017"
+
+  # ─── Express Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      # Override the default production target if multi-stage has a dev target (optional, we use command override below)
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+    # Expose port directly to host for backend debugging & direct API tests (Postman)
+    ports:
+      - "5001:5001"
+    # Bind mount the host's backend codebase for nodemon hot-reloading
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+      # Prevent the container's production-tailored node_modules from being overwritten by the host
+      - /app/node_modules
+
+  # ─── FastAPI / AI Service ───────────────────────────────────────────────────
+  ai:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      # Enable FastAPI hot reloading
+      RELOAD: "true"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-part/app:/app/app
+      - ./ai-part/scrapers:/app/scrapers
+      - ./ai-part/scripts:/app/scripts
+
+  # ─── Next.js Standalone Frontend ────────────────────────────────────────────
+  frontend:
+    # Use Next dev server for HMR (Hot Module Replacement)
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/components:/app/components
+      - ./frontend/lib:/app/lib
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      # Prevent host's node_modules or build files from clobbering container node_modules/Next caches
+      - /app/node_modules
+      - /app/.next

@@ -1,0 +1,77 @@
+# =============================================================================
+# backend/.dockerignore
+# Controls what is sent to the Docker daemon as the build context.
+# Smaller build context = faster builds, smaller image, no leaked secrets.
+# =============================================================================
+
+
+# ─── Node dependencies ────────────────────────────────────────────────────────
+# node_modules is re-built inside the container by npm ci.
+# Never copy the host's node_modules — it contains platform-specific binaries
+# that won't work inside the Linux Alpine container.
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json.bak
+
+
+# ─── Environment / secrets ────────────────────────────────────────────────────
+# Never bake real secrets into the image.
+# Variables are injected at runtime via docker-compose env_file or -e flags.
+.env
+.env.*
+!.env.example
+
+
+# ─── Runtime-generated directories ───────────────────────────────────────────
+# logs/ and uploads/ are created at container startup (mkdir in Dockerfile).
+# Mounting them as volumes means the host path overrides the container path.
+# Excluding them here prevents stale log/upload files from inflating the image.
+logs/
+uploads/
+
+
+# ─── Development tooling ──────────────────────────────────────────────────────
+# These are development-only and not needed in the production image.
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+# ─── Git internals ────────────────────────────────────────────────────────────
+# Git history and CI config have no place in a production image.
+.git/
+.gitignore
+.gitattributes
+
+
+# ─── Documentation ───────────────────────────────────────────────────────────
+README.md
+*.md
+
+
+# ─── Vercel deployment artifact ──────────────────────────────────────────────
+# vercel.json is only relevant for Vercel deploys, not Docker.
+vercel.json
+.vercel/
+
+
+# ─── OS artefacts ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+
+# ─── Docker files themselves ─────────────────────────────────────────────────
+# The Dockerfile and .dockerignore don't need to be inside the image.
+Dockerfile
+.dockerignore
+
+
+# ─── Test / coverage ─────────────────────────────────────────────────────────
+coverage/
+*.test.js
+*.spec.js
+__tests__/

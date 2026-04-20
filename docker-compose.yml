@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  # ─── Database (MongoDB) ─────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:6.0
+    container_name: drivest-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-admin_password}
+      MONGO_INITDB_DATABASE: ${DB_NAME:-drivest_db}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - drivest-network
+    # Port 27017 is not exposed to the host for production security; Nginx or internal containers query internally.
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ─── Express Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: drivest-backend
+    restart: unless-stopped
+    environment:
+      PORT: 5001
+      MONGODB_URI: ${MONGODB_URI:-mongodb://admin:admin_password@mongodb:27017/drivest_db?authSource=admin}
+      DB_NAME: ${DB_NAME:-drivest_db}
+      JWT_SECRET_TOKEN: ${JWT_SECRET_TOKEN}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+      JWT_REFRESH_TOKEN: ${JWT_REFRESH_TOKEN}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      CLOUD_NAME: ${CLOUD_NAME}
+      CLOUD_API_KEY: ${CLOUD_API_KEY}
+      CLOUD_API_SECRET: ${CLOUD_API_SECRET}
+      PUSHER_APP_ID: ${PUSHER_APP_ID}
+      PUSHER_KEY: ${PUSHER_KEY}
+      PUSHER_SECRET: ${PUSHER_SECRET}
+      PUSHER_CLUSTER: ${PUSHER_CLUSTER:-eu}
+      PUSHER_USE_TLS: ${PUSHER_USE_TLS:-true}
+      FIREBASE_SERVICE_ACCOUNT_B64: ${FIREBASE_SERVICE_ACCOUNT_B64}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      RAPIDAPI_HOST: ${RAPIDAPI_HOST}
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      PYTHON_API_URL: http://ai:8000
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_logs:/app/logs
+    networks:
+      - drivest-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  # ─── FastAPI / AI Service ───────────────────────────────────────────────────
+  ai:
+    build:
+      context: ./ai-part
+      dockerfile: Dockerfile
+    container_name: drivest-ai
+    restart: unless-stopped
+    environment:
+      PORT: 8000
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL_NAME: ${OPENAI_MODEL_NAME:-gpt-4o-mini}
+      NODE_API_URL: http://backend:5001/ai/import-cars
+    volumes:
+      - ai_logs:/app/logs
+      - ai_data:/app/data
+    networks:
+      - drivest-network
+    depends_on:
+      backend:
+        condition: service_started
+
+  # ─── Next.js Standalone Frontend ────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost/api}
+        NEXT_PUBLIC_PUSHER_KEY: ${NEXT_PUBLIC_PUSHER_KEY}
+        NEXT_PUBLIC_PUSHER_CLUSTER: ${NEXT_PUBLIC_PUSHER_CLUSTER:-eu}
+    container_name: drivest-frontend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    networks:
+      - drivest-network
+    depends_on:
+      backend:
+        condition: service_started
+
+  # ─── Nginx Reverse Proxy ───────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: drivest-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - drivest-network
+    depends_on:
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_started
+
+volumes:
+  mongodb_data:
+  backend_uploads:
+  backend_logs:
+  ai_logs:
+  ai_data:
+
+networks:
+  drivest-network:
+    driver: bridge

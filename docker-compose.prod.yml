@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # ─── Database (MongoDB) ─────────────────────────────────────────────────────
+  mongodb:
+    # Production database runs on standard volumes without host mapping
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ─── Express Backend ────────────────────────────────────────────────────────
+  backend:
+    # No volume mounts for code. The code baked into the Dockerfile is immutable.
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ─── FastAPI / AI Service ───────────────────────────────────────────────────
+  ai:
+    # Production execution limits
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ─── Next.js Standalone Frontend ────────────────────────────────────────────
+  frontend:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ─── Nginx Reverse Proxy ───────────────────────────────────────────────────
+  nginx:
+    # Expose only standard HTTP/HTTPS ports to the internet.
+    ports:
+      - "80:80"
+      - "443:443"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"

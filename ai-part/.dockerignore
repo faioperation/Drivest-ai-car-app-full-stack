@@ -1,0 +1,94 @@
+# =============================================================================
+# ai-part/.dockerignore
+# Excludes files that are unnecessary, large, or sensitive from the Docker
+# build context sent to the daemon.
+# =============================================================================
+
+
+# ─── Python bytecode & cache ──────────────────────────────────────────────────
+# Python compiles .py files to .pyc bytecode — never include these.
+# They are OS/Python-version specific and will be regenerated inside the container.
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyd
+
+
+# ─── Virtual environments ────────────────────────────────────────────────────
+# The container uses pip to install from requirements.txt directly.
+# Never copy the host's venv — it contains host-OS-specific binaries.
+venv/
+.venv/
+env/
+ENV/
+.env
+virtualenv/
+
+
+# ─── Environment / secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+
+# ─── Large scraped data files ─────────────────────────────────────────────────
+# These JSON files are regenerated at runtime by the scraper.
+# Including them would massively inflate the build context (scrapers/output.json = 984KB,
+# scrapers/copy.json = 984KB — together nearly 2MB of scraped data).
+scrapers/output.json
+scrapers/copy.json
+scrapers/output_test.json
+output.json
+
+
+# ─── Runtime-generated directories ───────────────────────────────────────────
+# Created fresh in the Dockerfile via mkdir.
+# Mounted as Docker volumes at runtime.
+logs/
+data/
+
+
+# ─── Jupyter / notebooks ─────────────────────────────────────────────────────
+*.ipynb
+.ipynb_checkpoints/
+
+
+# ─── IDE / editor ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+# ─── Git internals ────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+
+
+# ─── OS artefacts ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+
+# ─── Documentation ───────────────────────────────────────────────────────────
+README.md
+*.md
+
+
+# ─── Docker files themselves ─────────────────────────────────────────────────
+Dockerfile
+.dockerignore
+
+
+# ─── Test files ──────────────────────────────────────────────────────────────
+# test_full_sync.py and test_summary_notif.py are in the ai-part root.
+test_*.py
+*_test.py
+
+
+# ─── Nested empty directory ───────────────────────────────────────────────────
+# ai-part/ai-part/ is an empty directory found in the repo.
+ai-part/
