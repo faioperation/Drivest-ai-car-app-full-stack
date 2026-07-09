@@ -1,0 +1,305 @@
+class CarModel {
+  final String id;
+  final String title;
+  final String color;
+  final String make;
+  final int year;
+  final int price;
+  final String city;
+  final String country;
+  final String imageUrl;
+  final String description;
+  final int specs;      // seats
+  final int mileage;    // new field
+
+  CarModel({
+    required this.id,
+    required this.title,
+    required this.color,
+    required this.make,
+    required this.year,
+    required this.price,
+    required this.city,
+    required this.country,
+    required this.imageUrl,
+    required this.description,
+    required this.specs,
+    required this.mileage,  // add here
+  });
+
+  factory CarModel.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic value) {
+      if (value == null) return 0;
+      if (value is int) return value;
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
+    return CarModel(
+      id: json['_id'] ?? '',
+      title: json['title'] ?? '',
+      color: json['color'] ?? '',
+      make: json['make'] ?? '',
+      year: parseInt(json['year']),
+      price: parseInt(json['price']),
+      city: json['city'] ?? '',
+      country: json['country'] ?? '',
+      imageUrl: json['image'] ?? '',
+      description: json['description'] ?? '',
+      specs: json['specs']?['seats'] ?? 0,
+      mileage: parseInt(json['mileage']), // ✅ new mapping
+    );
+  }
+}
+//
+// class CarModel {
+//   // 🔹 BASIC (OLD + NEW)
+//   final String id;
+//   final String title;
+//   final String subtitle;
+//   final String description;
+//   final String make;
+//   final String brand;
+//   final String model;
+//   final String trim;
+//   final int year;
+//   final String status;
+//
+//   // 🔹 PRICE
+//   final int price;
+//   final String currency;
+//
+//   // 🔹 LOCATION (OLD SAFE)
+//   final String city;
+//   final String country;
+//
+//   // 🔹 IMAGES
+//   final String image; // main
+//   final List<String> images;
+//
+//   // 🔹 OLD FIELDS (DO NOT BREAK)
+//   final int specs; // seats (old usage)
+//   final int mileage;
+//
+//   // 🔹 NEW STRUCTURED DATA
+//   final CarSpecs specsData;
+//   final SellerInfo sellerInfo;
+//   final CarMetrics metrics;
+//   final CarLocation location;
+//   final CarSource source;
+//
+//   // 🔹 META
+//   final String createdAt;
+//   final String updatedAt;
+//
+//   CarModel({
+//     required this.id,
+//     required this.title,
+//     required this.subtitle,
+//     required this.description,
+//     required this.make,
+//     required this.brand,
+//     required this.model,
+//     required this.trim,
+//     required this.year,
+//     required this.status,
+//     required this.price,
+//     required this.currency,
+//     required this.city,
+//     required this.country,
+//     required this.image,
+//     required this.images,
+//     required this.specs,
+//     required this.mileage,
+//     required this.specsData,
+//     required this.sellerInfo,
+//     required this.metrics,
+//     required this.location,
+//     required this.source,
+//     required this.createdAt,
+//     required this.updatedAt,
+//   });
+//
+//   factory CarModel.fromJson(Map<String, dynamic> json) {
+//     int parseInt(dynamic v) {
+//       if (v == null) return 0;
+//       if (v is int) return v;
+//       if (v is String) return int.tryParse(v) ?? 0;
+//       return 0;
+//     }
+//
+//     return CarModel(
+//       id: json['_id'] ?? '',
+//       title: json['title'] ?? '',
+//       subtitle: json['subtitle'] ?? '',
+//       description: json['description'] ?? '',
+//       make: json['make'] ?? '',
+//       brand: json['brand'] ?? '',
+//       model: json['model'] ?? '',
+//       trim: json['trim'] ?? '',
+//       year: parseInt(json['year']),
+//       status: json['status'] ?? '',
+//
+//       price: parseInt(json['price']),
+//       currency: json['currency'] ?? '',
+//
+//       city: json['location']?['city'] ?? '',
+//       country: json['location']?['country'] ?? '',
+//
+//       image: json['image'] ?? '',
+//       images: (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
+//
+//       // 🔹 OLD compatibility
+//       specs: parseInt(json['specs']?['seats']),
+//       mileage: parseInt(json['mileage']),
+//
+//       // 🔹 NEW STRUCTURED
+//       specsData: CarSpecs.fromJson(json['specs'] ?? {}),
+//       sellerInfo: SellerInfo.fromJson(json['sellerInfo'] ?? {}),
+//       metrics: CarMetrics.fromJson(json['metrics'] ?? {}),
+//       location: CarLocation.fromJson(json['location'] ?? {}),
+//       source: CarSource.fromJson(json['source'] ?? {}),
+//
+//       createdAt: json['createdAt'] ?? '',
+//       updatedAt: json['updatedAt'] ?? '',
+//     );
+//   }
+// }
+//
+// /// ================= SPECS =================
+// class CarSpecs {
+//   final String engineSize;
+//   final String power;
+//   final String gearbox;
+//   final String gears;
+//   final String cylinders;
+//   final String fuelConsumption;
+//   final String emissions;
+//   final String emptyWeight;
+//   final String firstRegistration;
+//   final int doors;
+//   final int seats;
+//
+//   CarSpecs({
+//     required this.engineSize,
+//     required this.power,
+//     required this.gearbox,
+//     required this.gears,
+//     required this.cylinders,
+//     required this.fuelConsumption,
+//     required this.emissions,
+//     required this.emptyWeight,
+//     required this.firstRegistration,
+//     required this.doors,
+//     required this.seats,
+//   });
+//
+//   factory CarSpecs.fromJson(Map<String, dynamic> json) {
+//     int p(dynamic v) =>
+//         v is int ? v : int.tryParse(v?.toString() ?? '') ?? 0;
+//
+//     return CarSpecs(
+//       engineSize: json['engineSize'] ?? '',
+//       power: json['power'] ?? '',
+//       gearbox: json['gearbox'] ?? '',
+//       gears: json['gears'] ?? '',
+//       cylinders: json['cylinders'] ?? '',
+//       fuelConsumption: json['fuelConsumption'] ?? '',
+//       emissions: json['emissions'] ?? '',
+//       emptyWeight: json['emptyWeight'] ?? '',
+//       firstRegistration: json['firstRegistration'] ?? '',
+//       doors: p(json['doors']),
+//       seats: p(json['seats']),
+//     );
+//   }
+// }
+//
+// /// ================= SELLER =================
+// class SellerInfo {
+//   final String companyName;
+//   final String contactName;
+//   final String location;
+//   final List<String> phone;
+//
+//   SellerInfo({
+//     required this.companyName,
+//     required this.contactName,
+//     required this.location,
+//     required this.phone,
+//   });
+//
+//   factory SellerInfo.fromJson(Map<String, dynamic> json) {
+//     return SellerInfo(
+//       companyName: json['companyName'] ?? '',
+//       contactName: json['contactName'] ?? '',
+//       location: json['location'] ?? '',
+//       phone: (json['phone'] as List?)?.map((e) => e.toString()).toList() ?? [],
+//     );
+//   }
+// }
+//
+// /// ================= METRICS =================
+// class CarMetrics {
+//   final int views;
+//   final int saves;
+//   final int shares;
+//   final int leadCount;
+//
+//   CarMetrics({
+//     required this.views,
+//     required this.saves,
+//     required this.shares,
+//     required this.leadCount,
+//   });
+//
+//   factory CarMetrics.fromJson(Map<String, dynamic> json) {
+//     int p(dynamic v) =>
+//         v is int ? v : int.tryParse(v?.toString() ?? '') ?? 0;
+//
+//     return CarMetrics(
+//       views: p(json['views']),
+//       saves: p(json['saves']),
+//       shares: p(json['shares']),
+//       leadCount: p(json['leadCount']),
+//     );
+//   }
+// }
+//
+// /// ================= LOCATION =================
+// class CarLocation {
+//   final String city;
+//   final String country;
+//
+//   CarLocation({
+//     required this.city,
+//     required this.country,
+//   });
+//
+//   factory CarLocation.fromJson(Map<String, dynamic> json) {
+//     return CarLocation(
+//       city: json['city'] ?? '',
+//       country: json['country'] ?? '',
+//     );
+//   }
+// }
+//
+// /// ================= SOURCE =================
+// class CarSource {
+//   final String type;
+//   final String sourceId;
+//   final String importedAt;
+//
+//   CarSource({
+//     required this.type,
+//     required this.sourceId,
+//     required this.importedAt,
+//   });
+//
+//   factory CarSource.fromJson(Map<String, dynamic> json) {
+//     return CarSource(
+//       type: json['type'] ?? '',
+//       sourceId: json['sourceId'] ?? '',
+//       importedAt: json['importedAt'] ?? '',
+//     );
+//   }
+// }
