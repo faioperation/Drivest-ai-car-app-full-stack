@@ -8,13 +8,15 @@ FROM node:20-alpine AS deps
 # Set working directory
 WORKDIR /app
 
+RUN apk add --no-cache wget
+
 # Copy dependency manifests first (cache-friendly)
 COPY package.json package-lock.json ./
 
 # Install production dependencies only, using the exact lockfile
 # --omit=dev  → skip devDependencies (nodemon is not needed in production)
 # --ignore-scripts → skip lifecycle scripts that might need build tools
-RUN npm ci --omit=dev --ignore-scripts
+RUN npm install --omit=dev --no-audit --no-fund
 
 
 # =============================================================================
@@ -51,7 +53,7 @@ USER drivest
 # NODE_ENV is set to production to disable dev-only Express behaviour.
 # PORT is the value server.js reads: process.env.PORT || 5001
 ENV NODE_ENV=production \
-    PORT=5001
+  PORT=5001
 
 # ─── Expose the application port ─────────────────────────────────────────────
 EXPOSE 5001

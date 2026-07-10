@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import DevBuildError from "../lib/DevBuildError.js";
 
 // ✅ User Registration

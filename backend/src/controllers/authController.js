@@ -7,7 +7,7 @@ import {
 import { generateTokens } from "../lib/generateToken.js";
 import { sendEmail } from "../lib/mailer.js";
 import User from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import Notification from "../models/Notification.js";

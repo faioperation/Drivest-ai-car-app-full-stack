@@ -14,7 +14,7 @@ import Session from "../models/Session.js";
 import UsageLog from "../models/UsageLog.js";
 import AuditLog from "../models/AuditLog.js";
 import Car from "../models/Car.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 // ✅ User profile Edit (Update)
 export const editProfile = async (req, res, next) => {

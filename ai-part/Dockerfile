@@ -10,9 +10,9 @@ WORKDIR /build
 
 # Install build dependencies needed by numpy / scikit-learn / pandas
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
-        gcc \
-        g++ \
+    build-essential \
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file first to leverage layer caching.
@@ -23,7 +23,7 @@ COPY requirements.txt .
 # --prefix=/install lets us copy exactly these packages into the final image.
 # --no-cache-dir keeps the builder layer small.
 RUN pip install --upgrade pip \
- && pip install --no-cache-dir --prefix=/install -r requirements.txt
+    && pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 
 # =============================================================================
@@ -45,15 +45,14 @@ FROM python:3.11-slim AS runner
 # and override with WDM_* env vars so it uses the system binary.
 # fonts-liberation and libglib2.0-0 are required by Chromium in headless mode.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        chromium \
-        chromium-driver \
-        fonts-liberation \
-        libglib2.0-0 \
-        libnss3 \
-        libgconf-2-4 \
-        libfontconfig1 \
-        libxss1 \
-        wget \
+    chromium \
+    chromium-driver \
+    fonts-liberation \
+    libglib2.0-0 \
+    libnss3 \
+    libfontconfig1 \
+    libxss1 \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # ─── Create non-root user ────────────────────────────────────────────────────
@@ -79,7 +78,7 @@ COPY scripts/    ./scripts/
 # data/raw/     → where the data converter writes cars_data.json (automator.py line 108)
 # data/ml_models/ → where joblib ML model is stored (ai_calculations.py line 36)
 RUN mkdir -p logs data/raw data/ml_models \
- && chown -R drivest:drivest /app
+    && chown -R drivest:drivest /app
 
 # ─── Drop privileges ─────────────────────────────────────────────────────────
 USER drivest
@@ -110,7 +109,7 @@ EXPOSE 8000
 # that returns {"status": "healthy", ...}
 # Using Python's built-in urllib to avoid installing curl/wget separately.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 
 # ─── Start command ───────────────────────────────────────────────────────────
 # Entry point: app/main.py  →  FastAPI app object named `app`

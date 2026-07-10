@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # ─── Database (MongoDB) ─────────────────────────────────────────────────────
   mongodb:
@@ -16,7 +14,7 @@ services:
       - drivest-network
     # Port 27017 is not exposed to the host for production security; Nginx or internal containers query internally.
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,27 +31,27 @@ services:
       PORT: 5001
       MONGODB_URI: ${MONGODB_URI:-mongodb://admin:admin_password@mongodb:27017/drivest_db?authSource=admin}
       DB_NAME: ${DB_NAME:-drivest_db}
-      JWT_SECRET_TOKEN: ${JWT_SECRET_TOKEN}
+      JWT_SECRET_TOKEN: ${JWT_SECRET_TOKEN:-drivest_jwt_secret_token_default_value_for_docker}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
-      JWT_REFRESH_TOKEN: ${JWT_REFRESH_TOKEN}
+      JWT_REFRESH_TOKEN: ${JWT_REFRESH_TOKEN:-drivest_jwt_refresh_token_default_value_for_docker}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      CLOUD_NAME: ${CLOUD_NAME}
-      CLOUD_API_KEY: ${CLOUD_API_KEY}
-      CLOUD_API_SECRET: ${CLOUD_API_SECRET}
-      PUSHER_APP_ID: ${PUSHER_APP_ID}
-      PUSHER_KEY: ${PUSHER_KEY}
-      PUSHER_SECRET: ${PUSHER_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-dummy_client_id}
+      CLOUD_NAME: ${CLOUD_NAME:-dummy_cloud_name}
+      CLOUD_API_KEY: ${CLOUD_API_KEY:-dummy_cloud_api_key}
+      CLOUD_API_SECRET: ${CLOUD_API_SECRET:-dummy_cloud_api_secret}
+      PUSHER_APP_ID: ${PUSHER_APP_ID:-dummy_pusher_app_id}
+      PUSHER_KEY: ${PUSHER_KEY:-dummy_pusher_key}
+      PUSHER_SECRET: ${PUSHER_SECRET:-dummy_pusher_secret}
       PUSHER_CLUSTER: ${PUSHER_CLUSTER:-eu}
       PUSHER_USE_TLS: ${PUSHER_USE_TLS:-true}
-      FIREBASE_SERVICE_ACCOUNT_B64: ${FIREBASE_SERVICE_ACCOUNT_B64}
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      RAPIDAPI_HOST: ${RAPIDAPI_HOST}
-      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      FIREBASE_SERVICE_ACCOUNT_B64: ${FIREBASE_SERVICE_ACCOUNT_B64:-eyJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsICJwcm9qZWN0X2lkIjogImR1bW15LXByb2plY3QiLCAicHJpdmF0ZV9rZXlfaWQiOiAiZHVtbXkta2V5LWlkIiwgInByaXZhdGVfa2V5IjogIi0tLS0tQkVHSU4gUFJJVkFURSBLRVktLS0tLVxuTUlJRXZnSUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2d3Z2dTa0FnRUFBY0lCQVFDN1xuLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLVxuIiwgImNsaWVudF9lbWFpbCI6ICJkdW1teUBkdW1teS1wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIn0=}
+      EMAIL_USER: ${EMAIL_USER:-dummy_email@gmail.com}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-dummy_email_password}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_dummy_stripe_secret_key_so_app_does_not_crash_at_startup}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID:-price_dummy_stripe_price_id}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_dummy_stripe_webhook_secret}
+      RAPIDAPI_HOST: ${RAPIDAPI_HOST:-dummy_rapidapi_host}
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY:-dummy_rapidapi_key}
       PYTHON_API_URL: http://ai:8000
     volumes:
       - backend_uploads:/app/uploads
